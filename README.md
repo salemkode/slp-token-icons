@@ -19,11 +19,11 @@ The endpoint will automatically resize and losslessly optimize the photos it ser
 
 Your icon will be available from https://tokens.bch.sx/ `{size}` / `{txid}` . `{format}`
 
-* `{size}` can be any number from 1-1700 (or "original" for the biggest version available)
+- `{size}` can be any number from 1-1700 (or "original" for the biggest version available)
 
-* `{txid}` is the transaction id of the token genesis transaction (aka token id)
+- `{txid}` is the transaction id of the token genesis transaction (aka token id)
 
-* `{format}` can be png, jpg, tiff or webp (endpoint will properly convert from png)
+- `{format}` can be png, jpg, tiff or webp (endpoint will properly convert from png)
 
 ## Examples
 
