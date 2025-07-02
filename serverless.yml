@@ -1,0 +1,67 @@
+service: slp-icon-uploader
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    GITHUB_TOKEN: ${env:GITHUB_TOKEN}
+    GITHUB_OWNER: ${env:GITHUB_OWNER}
+    GITHUB_REPO: ${env:GITHUB_REPO}
+    STAGE: ${self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:PutObject
+        - s3:DeleteObject
+      Resource: "arn:aws:s3:::slp-icons-temp-${self:provider.stage}/*"
+    - Effect: Allow
+      Action:
+        - s3:CreateBucket
+        - s3:ListBucket
+      Resource: "arn:aws:s3:::slp-icons-temp-${self:provider.stage}"
+
+functions:
+  uploadIcon:
+    handler: src/handlers/uploadIcon.handler
+    timeout: 300
+    memorySize: 1024
+    events:
+      - http:
+          path: /upload
+          method: post
+          cors: true
+    environment:
+      TEMP_BUCKET: slp-icons-temp-${self:provider.stage}
+
+  getUploadStatus:
+    handler: src/handlers/getUploadStatus.handler
+    timeout: 30
+    events:
+      - http:
+          path: /status/{uploadId}
+          method: get
+          cors: true
+
+resources:
+  Resources:
+    TempBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: slp-icons-temp-${self:provider.stage}
+        LifecycleConfiguration:
+          Rules:
+            - Id: DeleteAfter1Day
+              Status: Enabled
+              ExpirationInDays: 1
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 3000

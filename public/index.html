@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLP Token Icon Uploader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .file-upload {
+            border: 2px dashed #e1e1e1;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .file-upload.dragover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: scale(1.02);
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .preview {
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-container {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e1e1e1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status {
+            margin-top: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .requirements {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .requirements h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .requirements ul {
+            color: #666;
+            padding-left: 20px;
+        }
+
+        .requirements li {
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 SLP Token Icon Uploader</h1>
+            <p>Upload your SLP token icon and we'll automatically resize it and commit to the repository</p>
+        </div>
+
+        <form id="uploadForm">
+            <div class="form-group">
+                <label for="txid">Transaction ID (Token ID) *</label>
+                <input 
+                    type="text" 
+                    id="txid" 
+                    name="txid" 
+                    placeholder="Enter 64-character transaction ID..."
+                    pattern="[a-fA-F0-9]{64}"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="authorName">Your Name</label>
+                <input 
+                    type="text" 
+                    id="authorName" 
+                    name="authorName" 
+                    placeholder="Your name (optional)"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="authorEmail">Your Email</label>
+                <input 
+                    type="email" 
+                    id="authorEmail" 
+                    name="authorEmail" 
+                    placeholder="your.email@example.com (optional)"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Icon Image *</label>
+                <div class="file-upload" id="fileUpload">
+                    <input type="file" id="imageFile" accept="image/*" required>
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">
+                        Click to browse or drag and drop your icon here<br>
+                        <small>PNG, JPG, SVG, WebP supported</small>
+                    </div>
+                </div>
+                <div class="preview" id="preview">
+                    <img id="previewImage" alt="Preview">
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">
+                Upload Icon
+            </button>
+        </form>
+
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="status info" id="statusMessage">
+                Preparing upload...
+            </div>
+        </div>
+
+        <div class="requirements">
+            <h3>📋 Requirements</h3>
+            <ul>
+                <li>Image must be square (same width and height)</li>
+                <li>Minimum size: 32x32 pixels</li>
+                <li>Maximum file size: 10MB</li>
+                <li>Supported formats: PNG, JPG, SVG, WebP, GIF</li>
+                <li>Transaction ID must be exactly 64 hexadecimal characters</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin.replace(':3000', '') + '/dev'; // Adjust for your API Gateway URL
+        
+        const form = document.getElementById('uploadForm');
+        const fileUpload = document.getElementById('fileUpload');
+        const imageFile = document.getElementById('imageFile');
+        const preview = document.getElementById('preview');
+        const previewImage = document.getElementById('previewImage');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const statusMessage = document.getElementById('statusMessage');
+
+        // File upload handlers
+        fileUpload.addEventListener('click', () => imageFile.click());
+        fileUpload.addEventListener('dragover', handleDragOver);
+        fileUpload.addEventListener('dragleave', handleDragLeave);
+        fileUpload.addEventListener('drop', handleDrop);
+        imageFile.addEventListener('change', handleFileSelect);
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            fileUpload.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            fileUpload.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            fileUpload.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                imageFile.files = files;
+                handleFileSelect();
+            }
+        }
+
+        function handleFileSelect() {
+            const file = imageFile.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewImage.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const file = imageFile.files[0];
+            
+            if (!file) {
+                alert('Please select an image file');
+                return;
+            }
+
+            // Convert file to base64
+            const base64 = await fileToBase64(file);
+            
+            const uploadData = {
+                txid: formData.get('txid'),
+                imageData: base64,
+                authorName: formData.get('authorName') || 'Anonymous',
+                authorEmail: formData.get('authorEmail') || 'anonymous@example.com'
+            };
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Uploading...';
+                progressContainer.style.display = 'block';
+                
+                // Start upload
+                const response = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(uploadData)
+                });
+
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || 'Upload failed');
+                }
+
+                // Poll for status
+                await pollUploadStatus(result.uploadId);
+                
+            } catch (error) {
+                showStatus('error', `Upload failed: ${error.message}`);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Upload Icon';
+            }
+        });
+
+        async function pollUploadStatus(uploadId) {
+            const maxAttempts = 60; // 5 minutes max
+            let attempts = 0;
+            
+            const poll = async () => {
+                try {
+                    const response = await fetch(`${API_BASE}/status/${uploadId}`);
+                    const status = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(status.error || 'Failed to get status');
+                    }
+
+                    updateProgress(status.progress || 0);
+                    statusMessage.textContent = status.message || 'Processing...';
+                    
+                    if (status.status === 'completed') {
+                        showStatus('success', `✅ Upload completed! <a href="${status.commitUrl}" target="_blank">View commit</a>`);
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Upload Another Icon';
+                        return;
+                    } else if (status.status === 'failed') {
+                        throw new Error(status.error || 'Upload failed');
+                    } else if (attempts < maxAttempts) {
+                        attempts++;
+                        setTimeout(poll, 5000); // Poll every 5 seconds
+                    } else {
+                        throw new Error('Upload timeout');
+                    }
+                } catch (error) {
+                    showStatus('error', `Status check failed: ${error.message}`);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Upload Icon';
+                }
+            };
+            
+            poll();
+        }
+
+        function updateProgress(percent) {
+            progressFill.style.width = `${percent}%`;
+        }
+
+        function showStatus(type, message) {
+            statusMessage.className = `status ${type}`;
+            statusMessage.innerHTML = message;
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+    </script>
+</body>
+</html>
