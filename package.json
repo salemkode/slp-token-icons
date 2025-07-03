@@ -1,0 +1,21 @@
+{
+  "name": "slp-token-icons-serverless",
+  "version": "1.0.0",
+  "description": "Serverless SLP Token Icons with dynamic image resizing",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "vercel build",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["slp", "token", "icons", "cryptocurrency", "serverless"],
+  "dependencies": {
+    "sharp": "^0.32.6"
+  },
+  "devDependencies": {
+    "@vercel/node": "^3.0.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

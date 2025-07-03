@@ -1,0 +1,47 @@
+{
+  "functions": {
+    "api/image.js": {
+      "maxDuration": 10
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, s-maxage=86400"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.(png|jpg|jpeg|gif|svg|webp|tiff))",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/:size(\\d+)/:txid([a-fA-F0-9]{64}).:format(png|jpg|jpeg|webp|tiff)",
+      "destination": "/api/image?txid=:txid&size=:size&format=:format",
+      "permanent": false
+    },
+    {
+      "source": "/original/:txid([a-fA-F0-9]{64}).:format(png|jpg|jpeg|webp|tiff)",
+      "destination": "/api/image?txid=:txid&size=original&format=:format",
+      "permanent": false
+    }
+  ]
+}

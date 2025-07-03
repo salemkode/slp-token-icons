@@ -1,1 +1,10 @@
+node_modules/
+.vercel
+.env
+.env.local
+.env.production
+*.log
+dist/
+build/
 .DS_Store
+Thumbs.db
